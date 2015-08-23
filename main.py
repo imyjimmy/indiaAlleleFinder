@@ -2,10 +2,15 @@ from flask import Flask, url_for, request, render_template
 app = Flask(__name__)
 
 @app.route('/')
+@app.route('/index.html')
 def index():
-	return 'Welcome to India Allele Finder'
-	# return render_template('index.html') #will be the search page
+	#return 'Welcome to India Allele Finder'
+	return render_template('index.html') #will be the search page
 
+@app.route('/search')
+def search():
+	return "heyy!"
+	#query = request.args.get('search')
 
 
 ###THE FOLLOWING IS EXAMPLE CODE###
