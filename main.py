@@ -9,8 +9,9 @@ def index():
 
 @app.route('/search')
 def search():
-	return "heyy!"
-	#query = request.args.get('search')
+	query = request.args.get('search')
+	#return "heyy! %s" % query
+	return render_template('search.html', query=query)
 
 
 ###THE FOLLOWING IS EXAMPLE CODE###
