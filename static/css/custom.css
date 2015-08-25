@@ -1,0 +1,24 @@
+
+#iaf-logo {
+	width: 100%;
+}
+
+/* Start the vertical centering */
+.site-wrapper-inner {
+  /*vertical-align: middle;*/
+  position: relative;
+  top: 30%;
+}
+
+.navbar .navbar-nav{
+	display: inline-block;
+	float: none;
+}
+
+.navbar-default {
+
+}
+
+.navbar .navbar-collapse{
+	text-align: center;
+}
