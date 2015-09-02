@@ -2,22 +2,34 @@ import sqlite3
 from flask import Flask, url_for, request, render_template, g
 app = Flask(__name__)
 
-DATABASE = './db/database.db'
+DATABASE = '/Users/imyjimmy/Dropbox/for_alex/indiaAlleleFinder/db/database.db'
+
+app.config.from_object(__name__)
+
+def connect_to_database():
+	return sqlite3.connect(app.config['DATABASE'])
 
 #@app.before_request
 #def before_request():
 #	g.db = connect_db()
 
 def get_db():
-	db = getattr(g, '_database', None)
+	db = getattr(g, '_db', None)
 	if db is None:
-		db = g._database = connect_to_database()
+		db = g._db = connect_to_database()
 	return db
 
+@app.teardown_appcontext
 def close_connection(exception):
-	db = getattr(g, '_database', None)
+	db = getattr(g, '_db', None)
 	if db is not None:
 		db.close()
+
+def execute_query(query, args=()):
+	current = get_db().execute(query, args)
+	rows = current.fetchall()
+	current.close()
+	return rows
 
 @app.route('/')
 @app.route('/index.html')
@@ -25,12 +37,35 @@ def index():
 	#return 'Welcome to India Allele Finder'
 	return render_template('index.html') #will be the search page
 
+@app.route('/viewdb')
+def viewdb():
+	rows = execute_query("""SELECT * FROM alleles""")
+	return '<br>'.join(str(row) for row in rows)
+
+@app.route('/gene/<gene>')
+def sort_by_gene(gene):
+	rows = execute_query("""SELECT * FROM alleles WHERE GenerefGene = ?""", [gene])
+	return '<br>'.join(str(row) for row in rows)
+
+@app.route('/chr/<chromosome>')
+def sort_by_chr(chromosome):
+	rows = execute_query("""SELECT * FROM alleles WHERE Chr = ?""", [chromosome])
+	return '<br>'.join(str(row) for row in rows)
+
 @app.route('/search')
 def search():
 	query = request.args.get('search')
-	#return "heyy! %s" % query
-	return render_template('search.html', query=query)
+	results = processQuery(query)
+	print("results: " + str(results))
+	html = '<br>'.join(str(row) for row in results)
+	return render_template('search.html', query=query, results=results, h=html)
 
+def processQuery(query):
+	gene_rows = execute_query("""SELECT * FROM alleles WHERE GenerefGene = ?""", [query])
+	print('length of rows: ' + str(len(gene_rows)))
+	# for row in gene_rows:
+	#  	print("genes: " + str(row))
+	return gene_rows
 
 ###THE FOLLOWING IS EXAMPLE CODE###
 @app.route('/hello')
