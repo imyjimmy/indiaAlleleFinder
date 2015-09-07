@@ -1,7 +1,10 @@
 
 @font-face {
   font-family: 'ImprintMT-Shadow';
-  src: url('..fonts/ImprintMT-Shadow.eot?#iefix') format('embedded-opentype'),  url('..fonts/ImprintMT-Shadow.woff') format('woff'), url('/static/css/ImprintMT-Shadow.ttf')  format('truetype'), url('/static/css/ImprintMT-Shadow.svg#ImprintMT-Shadow') format('svg');
+  src: url('/static/fonts/ImprintMT-Shadow.eot?#iefix') format('embedded-opentype'),  
+  url('/static/fonts/ImprintMT-Shadow.woff') format('woff'), 
+  url('/static/fonts/ImprintMT-Shadow.ttf')  format('truetype'), 
+  url('/static/fonts/ImprintMT-Shadow.svg#ImprintMT-Shadow') format('svg');
   font-weight: normal;
   font-style: normal;
 }
