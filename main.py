@@ -1,35 +1,41 @@
-import sqlite3
-from flask import Flask, url_for, request, render_template, g
+# import sqlite3
+from flask import Flask, url_for, request, session, render_template
+from flask.ext.sqlalchemy import SQLAlchemy
+
 app = Flask(__name__)
+app.secret_key = "my precious"
+#DATABASE = '/Users/imyjimmy/Dropbox/for_alex/indiaAlleleFinder/db/database.db'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://root:root@localhost/indiaAlleleFinderDB'
+# app.config.from_object(__name__)
 
-DATABASE = '/Users/imyjimmy/Dropbox/for_alex/indiaAlleleFinder/db/database.db'
+db = SQLAlchemy(app)
 
-app.config.from_object(__name__)
-
-def connect_to_database():
-	return sqlite3.connect(app.config['DATABASE'])
+import model
+# def connect_to_database():
+# 	return sqlite3.connect(app.config['DATABASE'])
 
 #@app.before_request
 #def before_request():
 #	g.db = connect_db()
 
 def get_db():
-	db = getattr(g, '_db', None)
-	if db is None:
-		db = g._db = connect_to_database()
 	return db
 
-@app.teardown_appcontext
-def close_connection(exception):
-	db = getattr(g, '_db', None)
-	if db is not None:
-		db.close()
+# @app.teardown_appcontext
+# def close_connection(exception):
+# 	db = getattr(g, '_db', None)
+# 	if db is not None:
+# 		db.close()
 
-def execute_query(query, args=()):
-	current = get_db().execute(query, args)
-	rows = current.fetchall()
-	current.close()
-	return rows
+def execute_query(query, args={}):
+	# sql lite
+	# current = get_db().execute(query, args)
+	# rows = current.fetchall()
+	# current.close()
+	#	current = db.session.query(Alleles).all()
+	current = db.session.execute(query, args)
+
+	return current
 
 @app.route('/')
 @app.route('/index.html')
@@ -44,12 +50,12 @@ def viewdb():
 
 @app.route('/gene/<gene>')
 def sort_by_gene(gene):
-	rows = execute_query("""SELECT * FROM alleles WHERE GenerefGene = ?""", [gene])
+	rows = execute_query("SELECT * FROM alleles WHERE GenerefGene=:param", {"param": gene})
 	return '<br>'.join(str(row) for row in rows)
 
 @app.route('/chr/<chromosome>')
 def sort_by_chr(chromosome):
-	rows = execute_query("""SELECT * FROM alleles WHERE Chr = ?""", [chromosome])
+	rows = execute_query("SELECT * FROM alleles WHERE Chr=:param", {"param": chromosome}) #[chromosome]
 	return '<br>'.join(str(row) for row in rows)
 
 @app.route('/search')
@@ -58,14 +64,20 @@ def search():
 	results = processQuery(query)
 	print("results: " + str(results))
 	html = '<br>'.join(str(row) for row in results)
+	print("html: " + html)
 	return render_template('search.html', query=query, results=results, h=html)
 
 def processQuery(query):
-	gene_rows = execute_query("""SELECT * FROM alleles WHERE GenerefGene = ?""", [query])
-	print('length of rows: ' + str(len(gene_rows)))
+	gene_rows = execute_query("SELECT * FROM alleles WHERE GenerefGene=:param", {"param": query})
+	# print('in processQuery. length of rows: ' + str(len(gene_rows)))
 	# for row in gene_rows:
 	#  	print("genes: " + str(row))
 	return gene_rows
+
+
+
+
+
 
 ###THE FOLLOWING IS EXAMPLE CODE###
 @app.route('/hello')
