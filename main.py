@@ -4,6 +4,8 @@ from flask.ext.sqlalchemy import SQLAlchemy
 
 app = Flask(__name__)
 app.secret_key = "my precious"
+
+app.config.update(SEND_FILE_MAX_AGE_DEFAULT = 240)
 #DATABASE = '/Users/imyjimmy/Dropbox/for_alex/indiaAlleleFinder/db/database.db'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://root:root@localhost/indiaAlleleFinderDB'
 # app.config.from_object(__name__)
@@ -76,9 +78,6 @@ def processQuery(query):
 
 
 
-
-
-
 ###THE FOLLOWING IS EXAMPLE CODE###
 @app.route('/hello')
 @app.route('/hello/<name>')
@@ -103,15 +102,15 @@ def show_login_form():
 def showUserProfile(username):
 	return 'User: ' + username
 
-with app.test_request_context():
-	print url_for('index')
-	print url_for('login')
-	print url_for('login', next='/')
-	print url_for('showUserProfile', username='John Doe')
+# with app.test_request_context():
+	# print url_for('index')
+	# print url_for('login')
+	# print url_for('login', next='/')
+	# print url_for('showUserProfile', username='John Doe')
 
-@app.route('/post/<int:postID>')
-def showPost(postID):
-	return 'Post %d' % postID
+# @app.route('/post/<int:postID>')
+# def showPost(postID):
+# 	return 'Post %d' % postID
 
 if __name__ == "__main__":
 	app.run(debug=True)
